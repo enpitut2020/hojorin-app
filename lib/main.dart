@@ -43,135 +43,258 @@ void main() {
 //   )
 // }
 
-class MyApp extends StatelessWidget {
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: Scaffold(
+//         appBar: AppBar(
+//           title: Text('話題リスト'),
+//         ),
+//         body: ListView(
+//             children: [
+//               // _menuItem("メニュー1", Icon(Icons.settings)),
+//               // Card(
+//               //     child: Container(
+//               //         margin: const EdgeInsets.all(1.0),
+//               //         width: 300,
+//               //         height: 100,
+//               //         child: Column(
+//               //         children:[
+//               //           Text(
+//               //           'バイトとかしてる？',
+//               //           style: TextStyle(fontSize: 30),
+//               //         ),
+//               //           Wrap(children: _chips)
+//               //         ]
+//               //     )
+//               //     )
+//               // ),
+//               Card(
+//               child: Container(
+//                   margin: const EdgeInsets.all(1.0),
+//                   width: 300,
+//                   height: 100,
+//                   child: Text(
+//                     'バイトとかしてる？\n<初対面, 学生>',
+//                     style: TextStyle(fontSize: 30),
+//                   )
+//                 )
+//               ),
+//               Card(
+//                   margin: const EdgeInsets.all(5.0),
+//                   child: Container(
+//                       margin: const EdgeInsets.all(1.0),
+//                       width: 300,
+//                       height: 100,
+//                       child: Text(
+//                         '研究室決めた？\n<筑波大学3年生、10月>',
+//                         style: TextStyle(fontSize: 30),
+//                       )
+//                   )
+//               ),
+//               Card(
+//                   margin: const EdgeInsets.all(5.0),
+//                   child: Container(
+//                       margin: const EdgeInsets.all(1.0),
+//                       width: 300,
+//                       height: 100,
+//                       child: Text(
+//                         'その服似合ってるね\n<ご機嫌取り>',
+//                         style: TextStyle(fontSize: 30),
+//                       )
+//                   )
+//               ),
+//               Card(
+//                   margin: const EdgeInsets.all(5.0),
+//                   child: Container(
+//                       margin: const EdgeInsets.all(1.0),
+//                       width: 300,
+//                       height: 150,
+//                       child: Text(
+//                         '今日ちょっと可愛くない？（or かっこよくない？）\n<ご機嫌取り>',
+//                         style: TextStyle(fontSize: 30),
+//                       )
+//                   )
+//               ),
+//               Card(
+//                   margin: const EdgeInsets.all(5.0),
+//                   child: Container(
+//                       margin: const EdgeInsets.all(1.0),
+//                       width: 300,
+//                       height: 100,
+//                       child: Text(
+//                         '体育何選択した？\n<ご機嫌取り>',
+//                         style: TextStyle(fontSize: 30),
+//                       )
+//                   )
+//               ),
+//               Card(
+//                   margin: const EdgeInsets.all(5.0),
+//                   child: Container(
+//                       margin: const EdgeInsets.all(1.0),
+//                       width: 300,
+//                       height: 100,
+//                       child: Text(
+//                         '最近寒くなってきたよね\n<秋>',
+//                         style: TextStyle(fontSize: 30),
+//                       )
+//                   )
+//               ),
+//               Card(
+//                   margin: const EdgeInsets.all(5.0),
+//                   child: Container(
+//                       margin: const EdgeInsets.all(1.0),
+//                       width: 300,
+//                       height: 100,
+//                       child: Text(
+//                         'TOEICの勉強とかしてる？',
+//                         style: TextStyle(fontSize: 30),
+//                       )
+//                   )
+//               )
+//               // _menuItem("メニュー2", Icon(Icons.map)),
+//               // _menuItem("メニュー3", Icon(Icons.room)),
+//               // _menuItem("メニュー4", Icon(Icons.local_shipping)),
+//               // _menuItem("メニュー5", Icon(Icons.airplanemode_active)),
+//             ]
+//         ),
+//         //   body: Card(
+//         //     margin: const EdgeInsets.all(50.0),
+//         //     child: Container(
+//         //         margin: const EdgeInsets.all(10.0),
+//         //         width: 300,
+//         //         height: 100,
+//         //         child: Text(
+//         //           'Card',
+//         //           style: TextStyle(fontSize: 30),
+//         //         )
+//         //     ),
+//         //   )
+//       ),
+//     );
+//   }
+//
+//   Widget _menuItem(String title, Icon icon) {
+//     return GestureDetector(
+//       child:Container(
+//           padding: EdgeInsets.all(8.0),
+//           decoration: new BoxDecoration(
+//               border: new Border(bottom: BorderSide(width: 1.0, color: Colors.grey))
+//           ),
+//           child: Row(
+//             children: <Widget>[
+//               Container(
+//                 margin: EdgeInsets.all(10.0),
+//                 child:icon,
+//               ),
+//               Text(
+//                 title,
+//                 style: TextStyle(
+//                     color:Colors.black,
+//                     fontSize: 18.0
+//                 ),
+//               ),
+//             ],
+//           )
+//       ),
+//       onTap: () {
+//         print("onTap called.");
+//       },
+//     );
+//   }
+// }
+
+class MyApp extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    return _State();
+  }
+}
+
+class _State extends State<MyApp> {
+  var _controller = TextEditingController();
+  var _text = '';
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('話題リスト'),
+          // title: Text('話題リスト'),
+          title: Text('検索'),
         ),
-        body: ListView(
-            children: [
-              // _menuItem("メニュー1", Icon(Icons.settings)),
-              // Card(
-              //     child: Container(
-              //         margin: const EdgeInsets.all(1.0),
-              //         width: 300,
-              //         height: 100,
-              //         child: Column(
-              //         children:[
-              //           Text(
-              //           'バイトとかしてる？',
-              //           style: TextStyle(fontSize: 30),
-              //         ),
-              //           Wrap(children: _chips)
-              //         ]
-              //     )
-              //     )
+        body: Container(
+          child: Column(
+            children: <Widget>[
+              // TextField(
+              //   controller: _testController
               // ),
-              Card(
-              child: Container(
-                  margin: const EdgeInsets.all(1.0),
-                  width: 300,
-                  height: 100,
-                  child: Text(
-                    'バイトとかしてる？\n<初対面, 学生>',
-                    style: TextStyle(fontSize: 30),
-                  )
-                )
+          Padding(
+          padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _controller,
+              style: TextStyle(
+                fontSize: 25.0,
+                color: Colors.blueAccent,
               ),
-              Card(
-                  margin: const EdgeInsets.all(5.0),
-                  child: Container(
-                      margin: const EdgeInsets.all(1.0),
-                      width: 300,
-                      height: 100,
-                      child: Text(
-                        '研究室決めた？\n<筑波大学3年生、10月>',
-                        style: TextStyle(fontSize: 30),
-                      )
-                  )
+              decoration: InputDecoration(
+                  contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                  prefixIcon: Icon(Icons.search),
+                  hintText: "Enter tag",
+                  border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.blueAccent, width: 32.0),
+                      borderRadius: BorderRadius.circular(25.0)),
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white, width: 32.0),
+                      borderRadius: BorderRadius.circular(25.0)))),
               ),
-              Card(
-                  margin: const EdgeInsets.all(5.0),
-                  child: Container(
-                      margin: const EdgeInsets.all(1.0),
-                      width: 300,
-                      height: 100,
-                      child: Text(
-                        'その服似合ってるね\n<ご機嫌取り>',
-                        style: TextStyle(fontSize: 30),
-                      )
-                  )
+              RaisedButton(
+                child: Text('Submit'),
+                  onPressed: () => setState(
+                    () {
+                    _text = _controller.text;
+                  },
+                 ),
               ),
-              Card(
-                  margin: const EdgeInsets.all(5.0),
-                  child: Container(
-                      margin: const EdgeInsets.all(1.0),
-                      width: 300,
-                      height: 150,
-                      child: Text(
-                        '今日ちょっと可愛くない？（or かっこよくない？）\n<ご機嫌取り>',
-                        style: TextStyle(fontSize: 30),
-                      )
-                  )
-              ),
-              Card(
-                  margin: const EdgeInsets.all(5.0),
-                  child: Container(
-                      margin: const EdgeInsets.all(1.0),
-                      width: 300,
-                      height: 100,
-                      child: Text(
-                        '体育何選択した？\n<ご機嫌取り>',
-                        style: TextStyle(fontSize: 30),
-                      )
-                  )
-              ),
-              Card(
-                  margin: const EdgeInsets.all(5.0),
-                  child: Container(
-                      margin: const EdgeInsets.all(1.0),
-                      width: 300,
-                      height: 100,
-                      child: Text(
-                        '最近寒くなってきたよね\n<秋>',
-                        style: TextStyle(fontSize: 30),
-                      )
-                  )
-              ),
-              Card(
-                  margin: const EdgeInsets.all(5.0),
-                  child: Container(
-                      margin: const EdgeInsets.all(1.0),
-                      width: 300,
-                      height: 100,
-                      child: Text(
-                        'TOEICの勉強とかしてる？',
-                        style: TextStyle(fontSize: 30),
-                      )
-                  )
-              )
-              // _menuItem("メニュー2", Icon(Icons.map)),
-              // _menuItem("メニュー3", Icon(Icons.room)),
-              // _menuItem("メニュー4", Icon(Icons.local_shipping)),
-              // _menuItem("メニュー5", Icon(Icons.airplanemode_active)),
-            ]
-        ),
-        //   body: Card(
-        //     margin: const EdgeInsets.all(50.0),
-        //     child: Container(
-        //         margin: const EdgeInsets.all(10.0),
-        //         width: 300,
-        //         height: 100,
-        //         child: Text(
-        //           'Card',
-        //           style: TextStyle(fontSize: 30),
-        //         )
-        //     ),
-        //   )
-      ),
+              // Text('入力内容(debug): '+_controller.text)
+              Text('入力内容(debug): '+ _text),
+            //   (_text == 'a') ? ListView(
+            //     children: [
+            //       Card(
+            //         child: Container(
+            //           margin: const EdgeInsets.all(1.0),
+            //           width: 300,
+            //           height: 100,
+            //           child: Column(
+            //           children:[
+            //             Text(
+            //               'バイトとかしてる？',
+            //               style: TextStyle(fontSize: 30),
+            //             ),
+            //             // Wrap(children: _chips)
+            //           ]
+            //           )
+            //         )
+            //       ),
+            //       Card(
+            //         child: Container(
+            //           margin: const EdgeInsets.all(1.0),
+            //           width: 300,
+            //           height: 100,
+            //           child: Text(
+            //             'バイトとかしてる？\n<初対面, 学生>',
+            //             style: TextStyle(fontSize: 30),
+            //           )
+            //         )
+            //       )
+            //     ]
+            //   )
+            // ]
+          ]
+        )
+      )
+      )
     );
   }
 
