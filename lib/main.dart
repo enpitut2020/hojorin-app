@@ -24,7 +24,7 @@ class _TopicListPageState extends State<TopicListPage>{
     _topics = [new Topic('今日ちょっと可愛くない？（or かっこよくない？）',['ご機嫌取り']),
       new Topic('研究室決めた？',['筑波大学3年生','10月'])];
     _currentTopic = _topics.first;
-    _currentTopicIdx = 1;
+    _currentTopicIdx = 0;
   }
   @override
   Widget build(BuildContext context){
@@ -35,8 +35,10 @@ class _TopicListPageState extends State<TopicListPage>{
         ),
         body: InkWell(
           onTap: (){
-            _currentTopicIdx = ++_currentTopicIdx % _topics.length;
-            _currentTopic = _topics[_currentTopicIdx];
+            setState((){
+              _currentTopicIdx = ++_currentTopicIdx % _topics.length;
+              _currentTopic = _topics[_currentTopicIdx];
+            });
           },
           child: Card(
               child: Column(
