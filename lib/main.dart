@@ -26,7 +26,7 @@ class _TopicListPageState extends State<TopicListPage>{
       new Topic('研究室決めた？',['筑波大学3年生','10月']),new Topic('その服似合ってるね',['ご機嫌取り']),
       new Topic('ハロウィンなにかする?',['10月']), new Topic('最近寒くなってきたよね',['秋']),
       new Topic('体育何選択した?',['情報科学類3年']), new Topic('TOEICの勉強とかしてる?',['筑波大学3年生']),
-      new Topic('最近寒くなってきたよね',['秋']), new Topic('バイトとかしてる?(バイト何してる?)',['初対面','学生'])
+      new Topic('バイトとかしてる?(バイト何してる?)',['初対面','学生'])
     ];
     _currentTopic = _topics.first;
     _currentTopicIdx = 0;
