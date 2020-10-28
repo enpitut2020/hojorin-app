@@ -15,13 +15,18 @@ class TopicListPage extends StatefulWidget{
 }
 
 class _TopicListPageState extends State<TopicListPage>{
-  List<Topic> _topics = [
-    new Topic('今日ちょっと可愛くない？（or かっこよくない？）',['ご機嫌取り']),
-    new Topic('研究室決めた？',['筑波大学3年生','10月']),new Topic('その服似合ってるね',['ご機嫌取り']),
-    new Topic('ハロウィンなにかする?',['10月']), new Topic('最近寒くなってきたよね',['秋']),
-    new Topic('体育何選択した?',['情報科学類3年']), new Topic('TOEICの勉強とかしてる?',['筑波大学3年生']),
-    new Topic('バイトとかしてる?(バイト何してる?)',['初対面','学生'])
-  ];
+  List<Topic> _topics;
+  @override
+  initState() {
+    super.initState();
+    _topics = [
+      new Topic('今日ちょっと可愛くない？（or かっこよくない？）',['ご機嫌取り']),
+      new Topic('研究室決めた？',['筑波大学3年生','10月']),new Topic('その服似合ってるね',['ご機嫌取り']),
+      new Topic('ハロウィンなにかする?',['10月']), new Topic('最近寒くなってきたよね',['秋']),
+      new Topic('体育何選択した?',['情報科学類3年']), new Topic('TOEICの勉強とかしてる?',['筑波大学3年生']),
+      new Topic('バイトとかしてる?(バイト何してる?)',['初対面','学生'])
+    ];
+  }
   @override
   Widget build(BuildContext context){
     return MaterialApp(
