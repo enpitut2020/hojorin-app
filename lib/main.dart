@@ -22,7 +22,7 @@ class _TopicListPageState extends State<TopicListPage>{
   initState() {
     super.initState();
     _topics = [new Topic('今日ちょっと可愛くない？（or かっこよくない？）',['ご機嫌取り']),
-      new Topic('研究室決めた？',['筑波大学3年生','10月'])];
+      new Topic('研究室決めた？',['筑波大学3年生','10月']),new Topic('その服似合ってるね',['ご機嫌取り'])];
     _currentTopic = _topics.first;
     _currentTopicIdx = 0;
   }
