@@ -11,16 +11,34 @@ class TopicPage extends BasePage{
 }
 
 class _TopicPageState extends State<TopicPage>{
-  int _displayMode = 1;
-  static List<Widget> _topicPages = [OneTopicPage(),TopicListPage()];
+  int _displayMode = 0;
+  static List<BaseTopicPage> _topicPages = [OneTopicPage(),TopicListPage()];
   @override
   Widget build(BuildContext context){
-    return _topicPages[_displayMode];
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+          actions: <Widget>[
+            IconButton(
+                icon: _topicPages[_displayMode].icon,
+                onPressed: () => setState((){
+                  _displayMode = ++_displayMode % _topicPages.length;
+                }),
+            )
+          ],
+        ),
+        body: _topicPages[_displayMode],
+    );
   }
 }
 
-class OneTopicPage extends StatefulWidget{
-  OneTopicPage({Key key}):super(key: key);
+abstract class BaseTopicPage extends StatefulWidget {
+  BaseTopicPage({Key key, this.icon}):super(key: key);
+  final Icon icon;
+}
+
+class OneTopicPage extends BaseTopicPage{
+  OneTopicPage({Key key}):super(key: key,icon: Icon(Icons.list, color: Color.fromRGBO(255, 255, 255, 1)));
   @override
   State<StatefulWidget> createState() {
     return _OneTopicPageState();
@@ -86,8 +104,8 @@ class _OneTopicPageState extends State<OneTopicPage>{
   }
 }
 
-class TopicListPage extends StatefulWidget{
-  TopicListPage({Key key}):super(key: key);
+class TopicListPage extends BaseTopicPage{
+  TopicListPage({Key key}):super(key: key,icon: Icon(Icons.filter_none, color: Color.fromRGBO(255, 255, 255, 1)));
   State<StatefulWidget> createState() {
     return _TopicListPageState();
   }

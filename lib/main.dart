@@ -31,9 +31,6 @@ class _BaseViewState extends State<BaseView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_pageList[_selectedPageIndex].title),
-      ),
       body: _pageList[_selectedPageIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: [
