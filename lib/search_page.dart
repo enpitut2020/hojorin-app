@@ -3,7 +3,7 @@ import 'topic_page.dart';
 import 'base_page.dart';
 
 class SearchPage extends BasePage{
-  SearchPage({Key key}):super(key: key, title: "Topic");
+  SearchPage({Key key}):super(key: key, title: "Search");
   @override
   State<StatefulWidget> createState() {
     return _SearchPageState();

@@ -38,7 +38,7 @@ abstract class BaseTopicSubPage extends StatefulWidget {
 }
 
 class OneTopicSubPage extends BaseTopicSubPage{
-  OneTopicSubPage({Key key}):super(key: key,icon: Icon(Icons.list, color: Color.fromRGBO(255, 255, 255, 1)));
+  OneTopicSubPage({Key key}):super(key: key,icon: Icon(Icons.list, color: Colors.white));
   @override
   State<StatefulWidget> createState() {
     return _OneTopicSubPageState();
@@ -105,7 +105,7 @@ class _OneTopicSubPageState extends State<OneTopicSubPage>{
 }
 
 class TopicListSubPage extends BaseTopicSubPage{
-  TopicListSubPage({Key key}):super(key: key,icon: Icon(Icons.filter_none, color: Color.fromRGBO(255, 255, 255, 1)));
+  TopicListSubPage({Key key}):super(key: key,icon: Icon(Icons.filter_none, color: Colors.white));
   State<StatefulWidget> createState() {
     return _TopicListSubPageState();
   }
