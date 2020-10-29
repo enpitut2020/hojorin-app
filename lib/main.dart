@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'model/topic.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -63,7 +64,7 @@ class _TopicListPageState extends State<TopicListPage>{
                               runSpacing: 0.0,
                               direction: Axis.horizontal,
                               children: _currentTopic.tags.map((String tag){
-                                return new Chip(label:Text(tag));
+                                return new Chip(label:Text("#"+tag));
                               }).toList(),
                             ),
                           ),
@@ -78,8 +79,3 @@ class _TopicListPageState extends State<TopicListPage>{
   }
 }
 
-class Topic{
-  String body;
-  List<String> tags;
-  Topic(this.body,this.tags);
-}
