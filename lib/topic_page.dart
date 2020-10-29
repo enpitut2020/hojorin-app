@@ -12,7 +12,7 @@ class TopicPage extends BasePage{
 
 class _TopicPageState extends State<TopicPage>{
   int _displayMode = 0;
-  static List<BaseTopicPage> _topicPages = [OneTopicPage(),TopicListPage()];
+  static List<BaseTopicSubPage> _topicPages = [OneTopicSubPage(),TopicListSubPage()];
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -32,20 +32,20 @@ class _TopicPageState extends State<TopicPage>{
   }
 }
 
-abstract class BaseTopicPage extends StatefulWidget {
-  BaseTopicPage({Key key, this.icon}):super(key: key);
+abstract class BaseTopicSubPage extends StatefulWidget {
+  BaseTopicSubPage({Key key, this.icon}):super(key: key);
   final Icon icon;
 }
 
-class OneTopicPage extends BaseTopicPage{
-  OneTopicPage({Key key}):super(key: key,icon: Icon(Icons.list, color: Color.fromRGBO(255, 255, 255, 1)));
+class OneTopicSubPage extends BaseTopicSubPage{
+  OneTopicSubPage({Key key}):super(key: key,icon: Icon(Icons.list, color: Color.fromRGBO(255, 255, 255, 1)));
   @override
   State<StatefulWidget> createState() {
-    return _OneTopicPageState();
+    return _OneTopicSubPageState();
   }
 }
 
-class _OneTopicPageState extends State<OneTopicPage>{
+class _OneTopicSubPageState extends State<OneTopicSubPage>{
   List<Topic> _topics;
   Topic _currentTopic;
   int _currentTopicIdx;
@@ -104,14 +104,14 @@ class _OneTopicPageState extends State<OneTopicPage>{
   }
 }
 
-class TopicListPage extends BaseTopicPage{
-  TopicListPage({Key key}):super(key: key,icon: Icon(Icons.filter_none, color: Color.fromRGBO(255, 255, 255, 1)));
+class TopicListSubPage extends BaseTopicSubPage{
+  TopicListSubPage({Key key}):super(key: key,icon: Icon(Icons.filter_none, color: Color.fromRGBO(255, 255, 255, 1)));
   State<StatefulWidget> createState() {
-    return _TopicListPageState();
+    return _TopicListSubPageState();
   }
 }
 
-class _TopicListPageState extends State<TopicListPage>{
+class _TopicListSubPageState extends State<TopicListSubPage>{
   List<Topic> _topics;
   @override
   initState() {
