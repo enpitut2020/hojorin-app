@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'topic_page.dart';
 import 'base_page.dart';
+import 'search_page.dart';
 
 void main() {
   runApp(MainApp());
@@ -26,7 +27,7 @@ class _BaseViewState extends State<BaseView> {
   static List<BasePage> _pageList = [
     TopicPage(),
     TopicPage(),
-    TopicPage()
+    SearchPage()
   ];
   @override
   Widget build(BuildContext context) {
