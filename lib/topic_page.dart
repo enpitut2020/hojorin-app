@@ -111,7 +111,7 @@ class _OneTopicSubPageState extends State<OneTopicSubPage>{
 }
 
 class TopicListSubPage extends BaseTopicSubPage{
-  TopicListSubPage({Key key, List<Topic> topics}):super(key: key,icon: Icon(Icons.list, color: Colors.white), topics: topics);
+  TopicListSubPage({Key key, List<Topic> topics}):super(key: key,icon: Icon(Icons.filter_none, color: Colors.white), topics: topics);
   State<StatefulWidget> createState() {
     return _TopicListSubPageState();
   }
