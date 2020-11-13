@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'topic_page.dart';
 import 'base_page.dart';
 import 'search_page.dart';
+import 'topic_post_page.dart';
 
 void main() {
   runApp(MainApp());
@@ -26,7 +27,7 @@ class _BaseViewState extends State<BaseView> {
   int _selectedPageIndex = 0;
   static List<BasePage> _pageList = [
     TopicPage(),
-    TopicPage(),
+    TopicPostPage(),
     SearchPage()
   ];
   @override
@@ -41,7 +42,7 @@ class _BaseViewState extends State<BaseView> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add),
-            label: 'add',
+            label: 'post',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
