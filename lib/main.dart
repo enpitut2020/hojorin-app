@@ -1,20 +1,28 @@
 import 'package:flutter/material.dart';
+import 'model/topic.dart';
 import 'topic_page.dart';
 import 'base_page.dart';
 import 'search_page.dart';
 import 'topic_post_page.dart';
 
 void main() {
+  DataBase.topics = [
+    new Topic('今日ちょっと可愛くない？（or かっこよくない？）', ['ご機嫌取り']),
+    new Topic('研究室決めた？', ['筑波大学3年生', '10月']),
+    new Topic('その服似合ってるね', ['ご機嫌取り']),
+    new Topic('ハロウィンなにかする?', ['10月']),
+    new Topic('最近寒くなってきたよね', ['秋']),
+    new Topic('体育何選択した?', ['情報科学類3年']),
+    new Topic('TOEICの勉強とかしてる?', ['筑波大学3年生']),
+    new Topic('バイトとかしてる?(バイト何してる?)', ['初対面', '学生'])
+  ];
   runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: BaseView()
-    );
+    return MaterialApp(debugShowCheckedModeBanner: false, home: BaseView());
   }
 }
 
@@ -50,7 +58,11 @@ class _BaseViewState extends State<BaseView> {
           ),
         ],
         currentIndex: _selectedPageIndex,
-        onTap: (index){ setState((){_selectedPageIndex = index;}); },
+        onTap: (index) {
+          setState(() {
+            _selectedPageIndex = index;
+          });
+        },
       ),
     );
   }
