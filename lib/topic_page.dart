@@ -1,6 +1,23 @@
 import 'package:flutter/material.dart';
 import 'model/topic.dart';
 import 'base_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+
+class WatchList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      home: new Scaffold(
+          appBar: new AppBar(
+            title: new Text('FlutterとFirestoreの連携'),
+          ),
+          body: new TestList()),
+    );
+  }
+}
+
 
 class TopicPage extends BasePage{
   TopicPage({Key key}):super(key: key, title: "Topic");
@@ -44,6 +61,33 @@ class _TopicPageState extends State<TopicPage>{
     );
   }
 }
+
+// 以下追加部分
+class TestList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance.collection('topics').snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError)
+          return new Text('Error: ${snapshot.error}');
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting: return new Text('Loading...');
+          default:
+            return new ListView(
+              children: snapshot.data.documents.map((DocumentSnapshot document) {
+                return new ListTile(
+                  title: new Text(document.data()['topic']),
+                  //subtitle: new Text(document.data()['content']),
+                );
+              }).toList(),
+            );
+        }
+      },
+    );
+  }
+}
+// 追加部分終わり
 
 abstract class BaseTopicSubPage extends StatefulWidget {
   BaseTopicSubPage({Key key, this.icon,this.topics}):super(key: key);
