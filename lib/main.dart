@@ -4,18 +4,10 @@ import 'topic_page.dart';
 import 'base_page.dart';
 import 'search_page.dart';
 import 'topic_post_page.dart';
+import 'FavoritePage.dart';
 
 void main() {
-  DataBase.topics = [
-    new Topic('今日ちょっと可愛くない？（or かっこよくない？）', ['ご機嫌取り']),
-    new Topic('研究室決めた？', ['筑波大学3年生', '10月']),
-    new Topic('その服似合ってるね', ['ご機嫌取り']),
-    new Topic('ハロウィンなにかする?', ['10月']),
-    new Topic('最近寒くなってきたよね', ['秋']),
-    new Topic('体育何選択した?', ['情報科学類3年']),
-    new Topic('TOEICの勉強とかしてる?', ['筑波大学3年生']),
-    new Topic('バイトとかしてる?(バイト何してる?)', ['初対面', '学生'])
-  ];
+  DataBase.Init();
   runApp(MainApp());
 }
 
@@ -36,13 +28,16 @@ class _BaseViewState extends State<BaseView> {
   static List<BasePage> _pageList = [
     TopicPage(),
     TopicPostPage(),
-    SearchPage()
+    SearchPage(),
+    FavoritePage()
   ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pageList[_selectedPageIndex],
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        fixedColor: Colors.blueAccent,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.add_comment),
@@ -55,6 +50,10 @@ class _BaseViewState extends State<BaseView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.search),
             label: 'search',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'favorite',
           ),
         ],
         currentIndex: _selectedPageIndex,
