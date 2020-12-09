@@ -23,10 +23,14 @@ class _TopicPostPageState extends State<TopicPostPage> {
         appBar: AppBar(
           title: Text(widget.title),
           actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.add, color: Colors.white),
+            RaisedButton(
+              child: const Text('投稿'),
+              color: Colors.white,
+              shape: const OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(5)),
+              ),
               onPressed: onPostButtonPressed,
-            )
+            ),
           ],
         ),
         body: Column(children: <Widget>[
