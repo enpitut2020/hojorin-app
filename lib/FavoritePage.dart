@@ -21,8 +21,8 @@ class _FavoritePageState extends State<FavoritePage> {
     super.initState();
 
     _topicPages = [
-      OneTopicSubPage(topics: DataBase.topics),
-      TopicListSubPage(topics: DataBase.topics)
+      OneTopicSubPage(topics: DataBase.favoriteTopics),
+      TopicListSubPage(topics: DataBase.favoriteTopics),
     ];
   }
 
@@ -66,11 +66,14 @@ class OneTopicSubPage extends BaseTopicSubPage {
 class _OneTopicSubPageState extends State<OneTopicSubPage> {
   Topic _currentTopic;
   int _currentTopicIdx;
+  bool _isFavorite;
+
   @override
   initState() {
     super.initState();
     _currentTopic = widget.topics.first;
     _currentTopicIdx = 0;
+    _isFavorite = false;
   }
 
   @override
@@ -81,9 +84,19 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
         setState(() {
           _currentTopicIdx = ++_currentTopicIdx % widget.topics.length;
           _currentTopic = widget.topics[_currentTopicIdx];
+          _isFavorite = DataBase.favoriteTopics.contains(_currentTopic);
         });
       },
-      child: Column(
+      child: createFavoriteList(),
+    ));
+  }
+
+  // お気に入りリストページを生成する関数
+  Widget createFavoriteList() {
+    if (DataBase.favoriteTopics.length <= 0)
+      return Text(DataBase.favoriteTopics.length.toString());
+    else
+      return Column(
         children: <Widget>[
           Card(
               child: Column(children: <Widget>[
@@ -106,7 +119,8 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
                 ])
           ])),
           RaisedButton(
-            child: const Icon(Icons.favorite, color: Colors.redAccent),
+            child: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: Colors.redAccent),
             color: Colors.white,
             shape: const CircleBorder(
               side: BorderSide(
@@ -115,11 +129,18 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
                 style: BorderStyle.solid,
               ),
             ),
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                _isFavorite = !_isFavorite;
+                if (_isFavorite)
+                  DataBase.favoriteTopics.add(_currentTopic);
+                else
+                  DataBase.favoriteTopics.remove(_currentTopic);
+              });
+            },
           ),
         ],
-      ),
-    ));
+      );
   }
 }
 
