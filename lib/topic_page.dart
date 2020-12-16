@@ -102,21 +102,19 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
           _isFavorite = DataBase.favoriteTopics.contains(_currentTopic);
         });
       },
-      child: createFavoriteList(),
+      child: createWindow(),
     ));
   }
 
-  // お気に入りリストページを生成する関数
-  Widget createFavoriteList() {
-    if (DataBase.favoriteTopics.length <= 0)
-      return Container();
-    else
-      return Column(
-        children: <Widget>[
-          Card(
-              child: Column(children: <Widget>[
-            Text(_currentTopic.body, style: TextStyle(fontSize: 30)),
-            Row(
+  // 話題画面を生成する関数
+  Widget createWindow() {
+    return Column(
+      children: <Widget>[
+        Card(
+          child: Column(
+            children: <Widget>[
+              Text(_currentTopic.body, style: TextStyle(fontSize: 30)),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
@@ -131,41 +129,44 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
                       }).toList(),
                     ),
                   ),
-                ])
-          ])),
-          RaisedButton(
-            child: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: Colors.redAccent),
-            color: Colors.white,
-            shape: const CircleBorder(
-              side: BorderSide(
-                color: Colors.red,
-                width: 1,
-                style: BorderStyle.solid,
+                ],
               ),
-            ),
-            onPressed: () {
-              setState(() {
-                _isFavorite = !_isFavorite;
-                if (_isFavorite)
-                  DataBase.favoriteTopics.add(_currentTopic);
-                else
-                  DataBase.favoriteTopics.remove(_currentTopic);
-              });
-            },
+            ],
           ),
-        ],
-      );
-
+        ),
+        RaisedButton(
+          child: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: Colors.redAccent),
+          color: Colors.white,
+          shape: const CircleBorder(
+            side: BorderSide(
+              color: Colors.red,
+              width: 1,
+              style: BorderStyle.solid,
+            ),
+          ),
+          onPressed: () {
+            setState(() {
+              _isFavorite = !_isFavorite;
+              if (_isFavorite)
+                DataBase.favoriteTopics.add(_currentTopic);
+              else
+                DataBase.favoriteTopics.remove(_currentTopic);
+            });
+          },
+        ),
+      ],
+    );
+  }
 }
 
-class TopicListSubPage extends BaseTopicSubPage {
-  TopicListSubPage({Key key, List<Topic> topics})
-      : super(
-            key: key,
-            icon: Icon(Icons.filter_none, color: Colors.white),
-            topics: topics);
-}
+//class TopicListSubPage extends BaseTopicSubPage {
+//  TopicListSubPage({Key key, List<Topic> topics})
+//      : super(
+//            key: key,
+//            icon: Icon(Icons.filter_none, color: Colors.white),
+//            topics: topics);
+//}
 
 class TopicListSubPage extends BaseTopicSubPage {
   TopicListSubPage({Key key, List<Topic> topics})

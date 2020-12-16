@@ -71,31 +71,40 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
   @override
   initState() {
     super.initState();
-    _currentTopic = widget.topics.first;
+    _currentTopic = null;
+
     _currentTopicIdx = 0;
     _isFavorite = false;
   }
 
   @override
   Widget build(BuildContext context) {
+    //return Text('あいうえお');
     return Container(
         child: InkWell(
       onTap: () {
         setState(() {
-          _currentTopicIdx = ++_currentTopicIdx % widget.topics.length;
-          _currentTopic = widget.topics[_currentTopicIdx];
-          _isFavorite = DataBase.favoriteTopics.contains(_currentTopic);
+          _currentTopicIdx =
+              ++_currentTopicIdx % DataBase.favoriteTopics.length;
+          _currentTopic = DataBase.favoriteTopics[_currentTopicIdx];
+          _isFavorite = true;
         });
       },
       child: createFavoriteList(),
+      //child: Text('あいう'),
     ));
   }
 
   // お気に入りリストページを生成する関数
   Widget createFavoriteList() {
     if (DataBase.favoriteTopics.length <= 0)
-      return Text(DataBase.favoriteTopics.length.toString());
-    else
+      return Container();
+    else {
+      //本当はこの処理は、このページを下のタブで開いた瞬間によびたい
+      if (_currentTopic == null) {
+        _currentTopic = DataBase.favoriteTopics[_currentTopicIdx];
+        _isFavorite = true;
+      }
       return Column(
         children: <Widget>[
           Card(
@@ -141,6 +150,7 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
           ),
         ],
       );
+    }
   }
 }
 
