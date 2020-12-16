@@ -175,7 +175,7 @@ class _TopicListSubPageState extends State<TopicListSubPage> {
   Widget build(BuildContext context) {
     return Container(
         child: ListView(
-            children: widget.topics.map((Topic topic) {
+            children: DataBase.favoriteTopics.map((Topic topic) {
       return new Card(
           child: Column(children: <Widget>[
         Text(topic.body, style: TextStyle(fontSize: 30)),
