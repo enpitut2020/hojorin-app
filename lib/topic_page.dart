@@ -138,41 +138,42 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
     if (topic == null)
       return Container();
     else {
-      return Column(
-        children: <Widget>[
-          Card(
-            child: Column(
-              //縦に並べる
-              children: <Widget>[
-                // 話題テキスト本文
-                Text(topic.body, style: TextStyle(fontSize: 30)),
-                // タグ(CreateTopicTags関数を見よ)
-                createTopicTags(topic),
-              ],
-            ),
-          ),
-          RaisedButton(
-            child: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: Colors.redAccent),
-            color: Colors.white,
-            shape: const CircleBorder(
-              side: BorderSide(
-                color: Colors.red,
-                width: 1,
-                style: BorderStyle.solid,
+      //return Column(
+      return Center(
+        child: Card(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            //縦に並べる
+            children: <Widget>[
+              // 話題テキスト本文
+              Text(topic.body, style: TextStyle(fontSize: 30)),
+              // タグ(CreateTopicTags関数を見よ)
+              createTopicTags(topic),
+              RaisedButton(
+                child: Icon(
+                    _isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: Colors.redAccent),
+                color: Colors.white,
+                shape: const CircleBorder(
+                  side: BorderSide(
+                    color: Colors.red,
+                    width: 1,
+                    style: BorderStyle.solid,
+                  ),
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isFavorite = !_isFavorite;
+                    if (_isFavorite)
+                      DataBase.favoriteTopics.add(topic);
+                    else
+                      DataBase.favoriteTopics.remove(topic);
+                  });
+                },
               ),
-            ),
-            onPressed: () {
-              setState(() {
-                _isFavorite = !_isFavorite;
-                if (_isFavorite)
-                  DataBase.favoriteTopics.add(topic);
-                else
-                  DataBase.favoriteTopics.remove(topic);
-              });
-            },
+            ],
           ),
-        ],
+        ),
       );
     }
   }
