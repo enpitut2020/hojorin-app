@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'topic_page.dart';
 import 'base_page.dart';
 import 'model/topic.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TopicPostPage extends BasePage {
   TopicPostPage({Key key}) : super(key: key, title: "Post Topic");
@@ -69,8 +71,12 @@ class _TopicPostPageState extends State<TopicPostPage> {
   }
 
   void onPostButtonPressed() {
-    //話題投稿処理を書く
-    DataBase.topics.add(_topic);
+    //Firebaseへの話題投稿処理を書く
+    //参考：https://firebase.flutter.dev/docs/firestore/usage/
+    FirebaseFirestore.instance
+        .collection('topics')
+        .add({"topic": _topic.body, "tags": _topic.tags});
+    // DataBase.topics.add(_topic); //ローカルで投稿してるだけ
   }
 
   void onSubmittedTopicBody(String input) {
