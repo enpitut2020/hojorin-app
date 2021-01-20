@@ -32,7 +32,6 @@ class TopicPage extends BasePage {
   }
 }
 
-// 状態をつかさどるやつ（コア）
 class _TopicPageState extends State<TopicPage> {
   List<Topic> _topics;
   int _displayMode = 0;
@@ -53,11 +52,31 @@ class _TopicPageState extends State<TopicPage> {
         .snapshots()
         .listen((snapshot) {
       setState(() {
+        List<Topic> tmp = DataBase.topics;
         DataBase.topics = snapshot.docs.map((DocumentSnapshot document) {
-          return new Topic(document.data()['topic'],
+          Topic newTopic = Topic(document.data()['topic'],
               document.data()['tags'].cast<String>() as List<String>);
+          newTopic.dataBaseID = document.id;
+          return newTopic;
         }).toList();
+        for (var topic in tmp) {
+          Topic find = DataBase.topics.firstWhere(
+              (element) => topic.dataBaseID == element.dataBaseID,
+              orElse: () => null);
+          if (find != null) {
+            find.isFavorite = topic.isFavorite;
+          }
+        }
       });
+    });
+    getFavoriteInfo().then((favoritedIDList) {
+      for (Topic topic in DataBase.topics) {
+        if (favoritedIDList.contains(topic.dataBaseID)) {
+          topic.isFavorite = true;
+        } else {
+          topic.isFavorite = false;
+        }
+      }
     });
   }
 
@@ -102,14 +121,13 @@ class OneTopicSubPage extends BaseTopicSubPage {
 }
 
 class _OneTopicSubPageState extends State<OneTopicSubPage> {
-  bool _isFavorite = false;
-  int _currentTopicIdx;
+  int _currentTopicIdx = 0;
 
   @override
   initState() {
     super.initState();
     //_currentTopic = widget.topics.first; //最初の話題が取得できる
-    _currentTopicIdx = 0;
+    //_currentTopicIdx = 0;
   }
 
   @override
@@ -121,8 +139,6 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
           setState(() {
             //表示する話題の変数を更新
             _currentTopicIdx = ++_currentTopicIdx % DataBase.topics.length;
-            _isFavorite = DataBase.favoriteTopics
-                .contains(DataBase.topics[_currentTopicIdx]);
             //_currentTopic = widget.topics[_currentTopicIdx];
           });
         },
@@ -150,7 +166,7 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
               createTopicTags(topic),
               RaisedButton(
                 child: Icon(
-                    _isFavorite ? Icons.favorite : Icons.favorite_border,
+                    topic.isFavorite ? Icons.favorite : Icons.favorite_border,
                     color: Colors.redAccent),
                 color: Colors.white,
                 shape: const CircleBorder(
@@ -162,9 +178,9 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
                 ),
                 onPressed: () {
                   setState(() {
-                    _isFavorite = !_isFavorite;
-                    saveFavoriteInfo(topic.dataBaseID, _isFavorite);
-                    if (_isFavorite)
+                    topic.isFavorite = !topic.isFavorite;
+                    saveFavoriteInfo(topic.dataBaseID, topic.isFavorite);
+                    if (topic.isFavorite)
                       DataBase.favoriteTopics.add(topic);
                     else
                       DataBase.favoriteTopics.remove(topic);
@@ -203,14 +219,30 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
   }
 }
 
-saveFavoriteInfo(String id, bool isFavorite) async {
+//ユーザー認証の機能をつけてゆくゆくはDBにお気に入り情報を保持するが一旦
+//ローカルに保存
+void saveFavoriteInfo(String id, bool isFavorite) async {
   SharedPreferences pref = await SharedPreferences.getInstance();
-  List<String> dataBaseIDList = pref.getStringList("dataBaseIDList");
-  if (!dataBaseIDList.contains(id)) {
-    dataBaseIDList.add(id);
-    await pref.setStringList("dataBaseIDList", dataBaseIDList);
+  List<String> favoritedIDList = pref.getStringList("FavoritedIDList");
+  if (favoritedIDList == null) {
+    favoritedIDList = List<String>();
+  } else if (favoritedIDList.contains(id)) {
+    if (!isFavorite) {
+      favoritedIDList.remove(id);
+    }
+  } else if (isFavorite) {
+    favoritedIDList.add(id);
   }
-  await pref.setBool(id, isFavorite);
+  await pref.setStringList("FavoritedIDList", favoritedIDList);
+}
+
+Future<List<String>> getFavoriteInfo() async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  List<String> favoritedIDList = pref.getStringList("FavoritedIDList");
+  if (favoritedIDList == null) {
+    favoritedIDList = List<String>();
+  }
+  return Future.value(favoritedIDList);
 }
 
 class TopicListSubPage extends BaseTopicSubPage {
