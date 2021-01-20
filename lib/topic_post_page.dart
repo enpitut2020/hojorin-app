@@ -4,6 +4,7 @@ import 'base_page.dart';
 import 'model/topic.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class TopicPostPage extends BasePage {
   TopicPostPage({Key key}) : super(key: key, title: "Post Topic");
@@ -40,7 +41,8 @@ class _TopicPostPageState extends State<TopicPostPage> {
             decoration: new InputDecoration(
               hintText: "話題...",
             ),
-            onSubmitted: onSubmittedTopicBody,
+            //onSubmitted: onSubmittedTopicBody,
+            onChanged: onChangedTopicBody,
             //以下追加
             controller: _topicTextEditingController,
           ),
@@ -73,13 +75,25 @@ class _TopicPostPageState extends State<TopicPostPage> {
   void onPostButtonPressed() {
     //Firebaseへの話題投稿処理を書く
     //参考：https://firebase.flutter.dev/docs/firestore/usage/
+    //Fluttertoast.showToast(msg: "話題を投稿しました");
     FirebaseFirestore.instance
         .collection('topics')
         .add({"topic": _topic.body, "tags": _topic.tags});
-    // DataBase.topics.add(_topic); //ローカルで投稿してるだけ
+    Scaffold.of(context).showSnackBar(new SnackBar(
+      content: new Text("話題を投稿しました"),
+    ));
+    //内容を消す
+    _tagTextEditingController.clear();
+    _topicTextEditingController.clear();
+    setState(() {
+      _topic.tags.clear();
+    });
   }
 
-  void onSubmittedTopicBody(String input) {
+  //void onSubmittedTopicBody(String input) {
+  //  _topic.body = input;
+  //}
+  void onChangedTopicBody(String input) {
     _topic.body = input;
   }
 
