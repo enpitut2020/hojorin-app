@@ -42,7 +42,11 @@ class _BaseViewState extends State<BaseView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pageList[_selectedPageIndex],
+      //body: _pageList[_selectedPageIndex],
+      body: IndexedStack(
+        index: _selectedPageIndex,
+        children: _pageList,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         fixedColor: Colors.blueAccent,
