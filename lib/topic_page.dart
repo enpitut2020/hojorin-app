@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'model/topic.dart';
 import 'base_page.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DataBase {
   static List<Topic> topics;
@@ -164,6 +163,7 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
                 onPressed: () {
                   setState(() {
                     _isFavorite = !_isFavorite;
+                    saveFavoriteInfo(topic.dataBaseID, _isFavorite);
                     if (_isFavorite)
                       DataBase.favoriteTopics.add(topic);
                     else
@@ -201,6 +201,16 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
       ],
     );
   }
+}
+
+saveFavoriteInfo(String id, bool isFavorite) async {
+  SharedPreferences pref = await SharedPreferences.getInstance();
+  List<String> dataBaseIDList = pref.getStringList("dataBaseIDList");
+  if (!dataBaseIDList.contains(id)) {
+    dataBaseIDList.add(id);
+    await pref.setStringList("dataBaseIDList", dataBaseIDList);
+  }
+  await pref.setBool(id, isFavorite);
 }
 
 class TopicListSubPage extends BaseTopicSubPage {
