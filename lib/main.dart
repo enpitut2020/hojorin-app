@@ -4,7 +4,7 @@ import 'topic_page.dart';
 import 'base_page.dart';
 import 'search_page.dart';
 import 'topic_post_page.dart';
-import 'FavoritePage.dart';
+import 'favorite_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 
