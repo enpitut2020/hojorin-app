@@ -1,39 +1,93 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'model/topic.dart';
 import 'base_page.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 
+//ローカルに話題を保持していたときの名残
+//いつか消す
+//現状はローカルにお気に入りを保持しているのでその処理とtopicsの提供をFireBaseと仲介
 class DataBase {
-  static List<Topic> topics;
-  static List<Topic> favoriteTopics;
-
-  static Init() {
-    //topics = [
-    //  new Topic('今日ちょっと可愛くない？（or かっこよくない？）', ['ご機嫌取り']),
-    //  new Topic('研究室決めた？', ['筑波大学3年生', '10月']),
-    //  new Topic('その服似合ってるね', ['ご機嫌取り']),
-    //  new Topic('ハロウィンなにかする?', ['10月']),
-    //  new Topic('最近寒くなってきたよね', ['秋']),
-    //  new Topic('体育何選択した?', ['情報科学類3年']),
-    //  new Topic('TOEICの勉強とかしてる?', ['筑波大学3年生']),
-    //  new Topic('バイトとかしてる?(バイト何してる?)', ['初対面', '学生'])
-    //];
-    topics = [];
-    favoriteTopics = [];
+  static List<Topic> topics=[];
+  static List<Topic> getFavoritedTopics()
+  {
+    return topics.where((topic) => topic.isFavorite).toList();
   }
+  static void getTopicsUpdateFromFireBase(AsyncSnapshot<QuerySnapshot> snapshot)
+  {
+    List<Topic> updatedTopics = snapshot.data.docs.map((DocumentSnapshot document) {
+      Topic updatedTopic = Topic(document.data()['topic'],
+          document.data()['tags'].cast<String>() as List<String>);
+      updatedTopic.dataBaseID = document.id;
+      return updatedTopic;
+    }).toList();
+    for (var topic in topics) {
+      Topic find = updatedTopics.firstWhere(
+              (element) => topic.dataBaseID == element.dataBaseID,
+          orElse: () => null);
+      if (find != null) {
+        find.isFavorite = topic.isFavorite;
+      }
+    }
+    topics = updatedTopics;
+  }
+
+  static Future<void> init() async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('topics').get();
+    topics = snapshot.docs.map((DocumentSnapshot document) {
+      Topic updatedTopic = Topic(document.data()['topic'],
+          document.data()['tags'].cast<String>() as List<String>);
+      updatedTopic.dataBaseID = document.id;
+      return updatedTopic;
+    }).toList();
+    List<String> favoritedIDList = await getFavoriteInfo();
+    for (Topic topic in DataBase.topics) {
+      if (favoritedIDList.contains(topic.dataBaseID)) {
+        topic.isFavorite = true;
+      } else {
+        topic.isFavorite = false;
+      }
+    }
+  }
+
+  //ユーザー認証の機能をつけてゆくゆくはDBにお気に入り情報を保持するが一旦
+//ローカルに保存
+  static void saveFavoriteInfo(String id, bool isFavorite) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    List<String> favoritedIDList = pref.getStringList("FavoritedIDList");
+    if (favoritedIDList == null) {
+      favoritedIDList = List<String>();
+    } else if (favoritedIDList.contains(id)) {
+      if (!isFavorite) {
+        favoritedIDList.remove(id);
+      }
+    } else if (isFavorite) {
+      favoritedIDList.add(id);
+    }
+    await pref.setStringList("FavoritedIDList", favoritedIDList);
+  }
+
+  static Future<List<String>> getFavoriteInfo() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    List<String> favoritedIDList = pref.getStringList("FavoritedIDList");
+    if (favoritedIDList == null) {
+      favoritedIDList = List<String>();
+    }
+    return Future.value(favoritedIDList);
+  }
+
 }
 
 class TopicPage extends BasePage {
   TopicPage({Key key}) : super(key: key, title: "Topic");
   @override
   State<StatefulWidget> createState() {
-    return _TopicPageState(); //次どのような状態かを返す
+    return _TopicPageState();
   }
 }
 
-// 状態をつかさどるやつ（コア）
 class _TopicPageState extends State<TopicPage> {
   List<Topic> _topics;
   int _displayMode = 0;
@@ -47,19 +101,6 @@ class _TopicPageState extends State<TopicPage> {
       OneTopicSubPage(topics: _topics),
       TopicListSubPage(topics: _topics)
     ];
-
-    // Firestoreから最新のsnapshotをとってくる
-    FirebaseFirestore.instance
-        .collection('topics')
-        .snapshots()
-        .listen((snapshot) {
-      setState(() {
-        DataBase.topics = snapshot.docs.map((DocumentSnapshot document) {
-          return new Topic(document.data()['topic'],
-              document.data()['tags'].cast<String>() as List<String>);
-        }).toList();
-      });
-    });
   }
 
   @override
@@ -77,19 +118,32 @@ class _TopicPageState extends State<TopicPage> {
           )
         ],
       ),
-      body: _topicPages[_displayMode],
+      body: StreamBuilder<QuerySnapshot>(
+        stream:FirebaseFirestore.instance
+            .collection('topics')
+            .snapshots(),
+          builder : (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError) {
+              return Text('Something went wrong');
+            }
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Text('');
+            }
+            DataBase.getTopicsUpdateFromFireBase(snapshot);
+            return _topicPages[_displayMode];
+          }
+      ),
     );
   }
 }
 
-// ひな形
 abstract class BaseTopicSubPage extends StatefulWidget {
   BaseTopicSubPage({Key key, this.icon, this.topics}) : super(key: key);
   final Icon icon;
-  final List<Topic> topics; //DataBase.Topicが渡ってる？
+  final List<Topic> topics;
 }
 
-// 1つ表示の表示内容
+// 1つ表示
 class OneTopicSubPage extends BaseTopicSubPage {
   OneTopicSubPage({Key key, List<Topic> topics})
       : super(
@@ -103,14 +157,13 @@ class OneTopicSubPage extends BaseTopicSubPage {
 }
 
 class _OneTopicSubPageState extends State<OneTopicSubPage> {
-  bool _isFavorite = false;
-  int _currentTopicIdx;
+  int _currentTopicIdx = 0;
 
   @override
   initState() {
     super.initState();
     //_currentTopic = widget.topics.first; //最初の話題が取得できる
-    _currentTopicIdx = 0;
+    //_currentTopicIdx = 0;
   }
 
   @override
@@ -120,21 +173,20 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
         onTap: () {
           //タップしたときの挙動
           setState(() {
-            //表示する話題の変数を更新
-            _currentTopicIdx = ++_currentTopicIdx % DataBase.topics.length;
-            _isFavorite = DataBase.favoriteTopics
-                .contains(DataBase.topics[_currentTopicIdx]);
-            //_currentTopic = widget.topics[_currentTopicIdx];
+            //表示する話題を更新
+            if(DataBase.topics.length > 0){
+              _currentTopicIdx = ( 1 + _currentTopicIdx ) % DataBase.topics.length;
+            }
           });
         },
-        child: createWindow(DataBase.topics.length > 0
+        child: createOneTopicCard(DataBase.topics.length > 0
             ? DataBase.topics[_currentTopicIdx]
             : null),
       ),
     );
   }
 
-  Widget createWindow(Topic topic) {
+  Widget createOneTopicCard(Topic topic) {
     if (topic == null)
       return Container();
     else {
@@ -143,15 +195,14 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
         child: Card(
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            //縦に並べる
             children: <Widget>[
               // 話題テキスト本文
               Text(topic.body, style: TextStyle(fontSize: 30)),
-              // タグ(CreateTopicTags関数を見よ)
+              // タグ
               createTopicTags(topic),
               RaisedButton(
                 child: Icon(
-                    _isFavorite ? Icons.favorite : Icons.favorite_border,
+                    topic.isFavorite ? Icons.favorite : Icons.favorite_border,
                     color: Colors.redAccent),
                 color: Colors.white,
                 shape: const CircleBorder(
@@ -163,11 +214,8 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
                 ),
                 onPressed: () {
                   setState(() {
-                    _isFavorite = !_isFavorite;
-                    if (_isFavorite)
-                      DataBase.favoriteTopics.add(topic);
-                    else
-                      DataBase.favoriteTopics.remove(topic);
+                    topic.isFavorite = !topic.isFavorite;
+                    DataBase.saveFavoriteInfo(topic.dataBaseID, topic.isFavorite);
                   });
                 },
               ),
@@ -179,15 +227,12 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
   }
 
   Row createTopicTags(Topic topic) {
-    // タグの表示（Rowで横に並べる）
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Expanded(
-          //余白を埋める
           child: Wrap(
-            //おり返す
             alignment: WrapAlignment.start,
             spacing: 8.0,
             runSpacing: 0.0,
@@ -195,7 +240,7 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
             children: topic.tags.map((String tag) {
               //タグの文字列
               return new Chip(label: Text("#" + tag));
-            }).toList(), //リスト化
+            }).toList(),
           ),
         ),
       ],
@@ -226,12 +271,15 @@ class _TopicListSubPageState extends State<TopicListSubPage> {
       child: ListView(
         //children: widget.topics.map((Topic topic) {
         children: DataBase.topics.map((Topic topic) {
-          return new Card(
+          return Card(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
+                // 話題テキスト本文
                 Text(topic.body, style: TextStyle(fontSize: 30)),
-                // Row部分は1つ表示の部分と同じコード
+                // タグ
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Expanded(
@@ -241,11 +289,31 @@ class _TopicListSubPageState extends State<TopicListSubPage> {
                         runSpacing: 0.0,
                         direction: Axis.horizontal,
                         children: topic.tags.map((String tag) {
-                          return new Chip(label: Text('#' + tag));
+                          //タグの文字列
+                          return new Chip(label: Text("#" + tag));
                         }).toList(),
                       ),
                     ),
                   ],
+                ),
+                RaisedButton(
+                  child: Icon(
+                      topic.isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: Colors.redAccent),
+                  color: Colors.white,
+                  shape: const CircleBorder(
+                    side: BorderSide(
+                      color: Colors.red,
+                      width: 1,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      topic.isFavorite = !topic.isFavorite;
+                      DataBase.saveFavoriteInfo(topic.dataBaseID, topic.isFavorite);
+                    });
+                  },
                 ),
               ],
             ),
