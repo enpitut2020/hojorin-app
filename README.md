@@ -1,16 +1,34 @@
-# flutter_app
+# しゃべるん
 
-A new Flutter application.
+![icon](https://user-images.githubusercontent.com/59109301/105342259-7a46c080-5c23-11eb-954c-283dfea95ef5.png)
 
-## Getting Started
+## 概要
 
-This project is a starting point for a Flutter application.
+しゃべるんでしゃべろん♪  
+しゃべるんは会話に話題の若葉を芽吹かせるAndroidアプリ。  
+会話が苦手な人でもワイワイできる話のタネをどんどん掘り出してくれる。  
+またとっておきの良質なタネは、お気に入りに残して次の機会に再び芽吹かすことができるよ。  
+さらに、おいしいタネのレシピを思いついたら、しゃべるんに投稿してみんなにおすそわけできちゃう！  
+会話が苦手って感じるアナタも、しゃべるんでしゃべろん♪
 
-A few resources to get you started if this is your first Flutter project:
+## エレベータピッチ
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+しゃべるんは、
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+話題を思いつかない話を深ぼりできない問題を解決したいコミュニケーションに自信がない筑波大生向けのコミュニケーションサポートアプリです。
+
+これは話題の投稿・前の話題と関連する話題の提供によって、既存の話題提供アプリとは違ってコミュニケーションに自信がない人でも盛り上がる話題の提供を実現できます。
+
+## 開発環境
+
+- Flutter
+- Node.js
+
+## APKファイルのダウンロード
+
+AndroidアプリのAPKファイルは以下から取得＆インストールできます。
+- [しゃべるん（Androidアプリ）](https://bit.ly/3q5ds6h)
+
+## 開発チーム
+
+- V-Challenge
