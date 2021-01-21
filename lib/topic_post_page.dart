@@ -79,19 +79,32 @@ class _TopicPostPageState extends State<TopicPostPage> {
   }
 
   void onPostButtonPressed() {
-    //Firebaseへの話題投稿処理
-    FirebaseFirestore.instance
-        .collection('topics')
-        .add({"topic": _topic.body, "tags": _topic.tags});
-    Scaffold.of(context).showSnackBar(new SnackBar(
-      content: new Text("話題を投稿しました"),
-    ));
-    //内容を消す
-    _tagTextEditingController.clear();
-    _topicTextEditingController.clear();
-    setState(() {
-      _topic.tags.clear();
-    });
+    if(_topic.body == ""){
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        content: new Text("話題を記入してください"),
+      ));
+    }
+    else if(_topic.tags.isEmpty){
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        content: new Text("タグを1つ以上つけてください"),
+      ));
+    }
+    else{
+      //Firebaseへの話題投稿処理
+      FirebaseFirestore.instance
+          .collection('topics')
+          .add({"topic": _topic.body, "tags": _topic.tags});
+      //内容を消す
+      _tagTextEditingController.clear();
+      _topicTextEditingController.clear();
+      setState(() {
+        _topic.tags.clear();
+      });
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        content: new Text("話題を投稿しました"),
+      ));
+    }
+
   }
 
   void onChangedTopicBody(String input) {
