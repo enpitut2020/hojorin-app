@@ -61,7 +61,7 @@ class _SearchPageState extends State<SearchPage> {
           IconButton(
             icon: _topicPages[_displayMode].icon,
             onPressed: () => setState(() {
-              _displayMode = ++_displayMode % _topicPages.length;
+              _displayMode = ( 1 + _displayMode ) % _topicPages.length;
             }),
           )
         ],
