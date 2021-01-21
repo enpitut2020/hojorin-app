@@ -174,6 +174,7 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
 
   @override
   Widget build(BuildContext context) {
+    _currentTopicIdx = (_currentTopicIdx >= widget.topics.length) ? 0:_currentTopicIdx;
     return Container(
       child: InkWell(
         onTap: () {
