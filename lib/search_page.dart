@@ -18,37 +18,40 @@ class _SearchPageState extends State<SearchPage> {
   @override
   initState() {
     super.initState();
-    _topics = [
-      new Topic('今日ちょっと可愛くない？（or かっこよくない？）', ['ご機嫌取り']),
-      new Topic('研究室決めた？', ['筑波大学3年生', '10月']),
-      new Topic('その服似合ってるね', ['ご機嫌取り']),
-      new Topic('ハロウィンなにかする?', ['10月']),
-      new Topic('最近寒くなってきたよね', ['秋']),
-      new Topic('体育何選択した?', ['情報科学類3年']),
-      new Topic('TOEICの勉強とかしてる?', ['筑波大学3年生']),
-      new Topic('バイトとかしてる?(バイト何してる?)', ['初対面', '学生'])
-    ];
-    _topicPages = [
-      OneTopicSubPage(topics: _topics),
-      TopicListSubPage(topics: _topics)
-    ];
+    _topics = DataBase.topics;
+    _topicPages = createTopicSubPages(_topics);
   }
 
   List<Topic> searchTopics(String conditionText) {
-    List<String> conditions = conditionText.split((' '));
-    return _topics
-        .where((topic) => topic.tags.any((tag) => conditions.contains(tag)));
+    if(conditionText.isEmpty){
+      return _topics;
+    }
+    else{
+      List<String> conditions = conditionText.split((new RegExp(r"[ 　,]")));
+      return DataBase.topics.where((topic) =>
+          topic.tags.any((tag) =>
+              conditions.any((condition) =>
+                  tag.contains(condition)
+              )
+          )
+      ).toList();
+    }
   }
 
   void onSubmitCondition(String conditionText) {
     setState(() {
       _topics = searchTopics(conditionText);
-      _topicPages = [
-        OneTopicSubPage(topics: _topics),
-        TopicListSubPage(topics: _topics)
-      ];
+      _topicPages = createTopicSubPages(_topics);
     });
   }
+
+  List<BaseTopicSubPage> createTopicSubPages(List<Topic> topics){
+    return [
+      OneTopicSubPage(topics: topics),
+      TopicListSubPage(topics: topics)
+    ];
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +71,7 @@ class _SearchPageState extends State<SearchPage> {
           IconButton(
             icon: _topicPages[_displayMode].icon,
             onPressed: () => setState(() {
-              _displayMode = ++_displayMode % _topicPages.length;
+              _displayMode = ( 1 + _displayMode ) % _topicPages.length;
             }),
           )
         ],

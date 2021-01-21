@@ -12,28 +12,28 @@ class FavoritePage extends BasePage {
 }
 
 class _FavoritePageState extends State<FavoritePage> {
-  List<Topic> topics;
+  //List<Topic> topics;
   int _displayMode = 0;
   static List<BaseTopicSubFavoritePage> _topicPages;
   @override
   initState() {
     super.initState();
-    topics = DataBase.getFavoritedTopics();
-    _topicPages = [
-      OneTopicSubFavoritePage(topics: topics,updateFavoriteTopics: updateFavoriteTopics),
-      TopicListSubFavoritePage(topics: topics),
-    ];
+    var topics = DataBase.getFavoritedTopics();
+    _topicPages = createTopicPages(topics);
   }
 
   updateFavoriteTopics()
   {
     setState((){
-      topics = DataBase.getFavoritedTopics();
-      _topicPages = [
-        OneTopicSubFavoritePage(topics: topics,updateFavoriteTopics: updateFavoriteTopics),
-        TopicListSubFavoritePage(topics: topics),
-      ];
+      _topicPages = createTopicPages(DataBase.getFavoritedTopics());
     });
+  }
+
+  List<BaseTopicSubFavoritePage> createTopicPages(List<Topic> topics){
+    return [
+      OneTopicSubFavoritePage(topics: topics,updateFavoriteTopics: updateFavoriteTopics),
+      TopicListSubFavoritePage(topics: topics,updateFavoriteTopics: updateFavoriteTopics),
+    ];
   }
 
 
@@ -180,12 +180,12 @@ class _OneTopicSubPageFavoriteState extends State<OneTopicSubFavoritePage> {
 }
 
 class TopicListSubFavoritePage extends BaseTopicSubFavoritePage {
-  TopicListSubFavoritePage({Key key, List<Topic> topics, Function updateFavoritedTopics})
+  TopicListSubFavoritePage({Key key, List<Topic> topics, Function updateFavoriteTopics})
       : super(
       key: key,
       icon: Icon(Icons.filter_none, color: Colors.white),
       topics: topics,
-      updateFavoriteTopics: updateFavoritedTopics);
+      updateFavoriteTopics: updateFavoriteTopics);
   State<StatefulWidget> createState() {
     return _TopicListSubPageFavoriteState();
   }
