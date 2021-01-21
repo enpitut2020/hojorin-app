@@ -79,9 +79,7 @@ class _TopicPostPageState extends State<TopicPostPage> {
   }
 
   void onPostButtonPressed() {
-    //Firebaseへの話題投稿処理を書く
-    //参考：https://firebase.flutter.dev/docs/firestore/usage/
-    //Fluttertoast.showToast(msg: "話題を投稿しました");
+    //Firebaseへの話題投稿処理
     FirebaseFirestore.instance
         .collection('topics')
         .add({"topic": _topic.body, "tags": _topic.tags});
@@ -96,14 +94,10 @@ class _TopicPostPageState extends State<TopicPostPage> {
     });
   }
 
-  //void onSubmittedTopicBody(String input) {
-  //  _topic.body = input;
-  //}
   void onChangedTopicBody(String input) {
     _topic.body = input;
   }
 
-  // Enterを押したときにタグが投稿された
   void onSubmittedTopicTag(String input) {
     setState(() {
       _topic.tags.add(input);

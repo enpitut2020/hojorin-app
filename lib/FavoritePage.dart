@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'topic_page.dart';
 import 'model/topic.dart';
 import 'base_page.dart';
-import 'search_page.dart';
 
 class FavoritePage extends BasePage {
   FavoritePage({Key key}) : super(key: key, title: "Favorite");
@@ -13,18 +12,30 @@ class FavoritePage extends BasePage {
 }
 
 class _FavoritePageState extends State<FavoritePage> {
-  //List<Topic> _topics;
+  List<Topic> topics;
   int _displayMode = 0;
-  static List<BaseTopicSubPage> _topicPages;
+  static List<BaseTopicSubFavoritePage> _topicPages;
   @override
   initState() {
     super.initState();
-
+    topics = DataBase.getFavoritedTopics();
     _topicPages = [
-      OneTopicSubPage(topics: DataBase.favoriteTopics),
-      TopicListSubPage(topics: DataBase.favoriteTopics),
+      OneTopicSubFavoritePage(topics: topics,updateFavoriteTopics: updateFavoriteTopics),
+      TopicListSubFavoritePage(topics: topics),
     ];
   }
+
+  updateFavoriteTopics()
+  {
+    setState((){
+      topics = DataBase.getFavoritedTopics();
+      _topicPages = [
+        OneTopicSubFavoritePage(topics: topics,updateFavoriteTopics: updateFavoriteTopics),
+        TopicListSubFavoritePage(topics: topics),
+      ];
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +46,8 @@ class _FavoritePageState extends State<FavoritePage> {
           IconButton(
             icon: _topicPages[_displayMode].icon,
             onPressed: () => setState(() {
-              _displayMode = ++_displayMode % _topicPages.length;
+              updateFavoriteTopics();
+              _displayMode = ( 1 + _displayMode ) % _topicPages.length;
             }),
           )
         ],
@@ -45,127 +57,134 @@ class _FavoritePageState extends State<FavoritePage> {
   }
 }
 
-abstract class BaseTopicSubPage extends StatefulWidget {
-  BaseTopicSubPage({Key key, this.icon, this.topics}) : super(key: key);
+abstract class BaseTopicSubFavoritePage extends StatefulWidget {
+  BaseTopicSubFavoritePage({Key key, this.icon, this.topics, this.updateFavoriteTopics}) : super(key: key);
   final Icon icon;
-  final List<Topic> topics; //DataBase.Topicが渡ってる？
+  final List<Topic> topics;
+  final Function updateFavoriteTopics;
 }
 
-class OneTopicSubPage extends BaseTopicSubPage {
-  OneTopicSubPage({Key key, List<Topic> topics})
+// 1つ表示
+class OneTopicSubFavoritePage extends BaseTopicSubFavoritePage {
+  OneTopicSubFavoritePage({Key key, List<Topic> topics,Function updateFavoriteTopics})
       : super(
-            key: key,
-            icon: Icon(Icons.list, color: Colors.white),
-            topics: topics);
+      key: key,
+      icon: Icon(Icons.list, color: Colors.white),
+      topics: topics,
+      updateFavoriteTopics: updateFavoriteTopics);
   @override
   State<StatefulWidget> createState() {
-    return _OneTopicSubPageState();
+    return _OneTopicSubPageFavoriteState();
   }
 }
 
-class _OneTopicSubPageState extends State<OneTopicSubPage> {
-  Topic _currentTopic;
-  int _currentTopicIdx;
-  bool _isFavorite;
+class _OneTopicSubPageFavoriteState extends State<OneTopicSubFavoritePage> {
+  int _currentTopicIdx = 0;
 
   @override
   initState() {
     super.initState();
-    _currentTopic = null;
-
-    _currentTopicIdx = 0;
-    _isFavorite = false;
   }
 
   @override
   Widget build(BuildContext context) {
-    //return Text('あいうえお');
     return Container(
-        child: InkWell(
-      onTap: () {
-        setState(() {
-          _currentTopicIdx =
-              ++_currentTopicIdx % DataBase.favoriteTopics.length;
-          _currentTopic = DataBase.favoriteTopics[_currentTopicIdx];
-          _isFavorite = true;
-        });
-      },
-      child: createFavoriteList(),
-      //child: Text('あいう'),
-    ));
+      child: InkWell(
+        onTap: () {
+          //タップしたときの挙動
+          setState(() {
+            //表示する話題を更新
+            if(widget.topics.length > 0){
+              if(!widget.topics[_currentTopicIdx].isFavorite){
+                widget.updateFavoriteTopics();
+              }
+              _currentTopicIdx = ( 1 + _currentTopicIdx ) % widget.topics.length;
+            }
+          });
+        },
+        child: createOneTopicCard(widget.topics.length > 0
+            ? widget.topics[_currentTopicIdx]
+            : null),
+      ),
+    );
   }
 
-  // お気に入りリストページを生成する関数
-  Widget createFavoriteList() {
-    if (DataBase.favoriteTopics.length <= 0)
+  Widget createOneTopicCard(Topic topic) {
+    if (topic == null)
       return Container();
     else {
-      //本当はこの処理は、このページを下のタブで開いた瞬間によびたい
-      if (_currentTopic == null) {
-        _currentTopic = DataBase.favoriteTopics[_currentTopicIdx];
-        _isFavorite = true;
-      }
-      return Column(
-        children: <Widget>[
-          Card(
-              child: Column(children: <Widget>[
-            Text(_currentTopic.body, style: TextStyle(fontSize: 30)),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: Wrap(
-                      alignment: WrapAlignment.start,
-                      spacing: 8.0,
-                      runSpacing: 0.0,
-                      direction: Axis.horizontal,
-                      children: _currentTopic.tags.map((String tag) {
-                        return new Chip(label: Text("#" + tag));
-                      }).toList(),
-                    ),
+      //return Column(
+      return Center(
+        child: Card(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              // 話題テキスト本文
+              Text(topic.body, style: TextStyle(fontSize: 30)),
+              // タグ
+              createTopicTags(topic),
+              RaisedButton(
+                child: Icon(
+                    topic.isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: Colors.redAccent),
+                color: Colors.white,
+                shape: const CircleBorder(
+                  side: BorderSide(
+                    color: Colors.red,
+                    width: 1,
+                    style: BorderStyle.solid,
                   ),
-                ])
-          ])),
-          RaisedButton(
-            child: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: Colors.redAccent),
-            color: Colors.white,
-            shape: const CircleBorder(
-              side: BorderSide(
-                color: Colors.red,
-                width: 1,
-                style: BorderStyle.solid,
+                ),
+                onPressed: () {
+                  topic.isFavorite = !topic.isFavorite;
+                  DataBase.saveFavoriteInfo(topic.dataBaseID, topic.isFavorite);
+                  setState(() {
+
+                  });
+                },
               ),
-            ),
-            onPressed: () {
-              setState(() {
-                _isFavorite = !_isFavorite;
-                if (_isFavorite)
-                  DataBase.favoriteTopics.add(_currentTopic);
-                else
-                  DataBase.favoriteTopics.remove(_currentTopic);
-              });
-            },
+            ],
           ),
-        ],
+        ),
       );
     }
   }
-}
 
-class TopicListSubPage extends BaseTopicSubPage {
-  TopicListSubPage({Key key, List<Topic> topics})
-      : super(
-            key: key,
-            icon: Icon(Icons.filter_none, color: Colors.white),
-            topics: topics);
-  State<StatefulWidget> createState() {
-    return _TopicListSubPageState();
+  Row createTopicTags(Topic topic) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: Wrap(
+            alignment: WrapAlignment.start,
+            spacing: 8.0,
+            runSpacing: 0.0,
+            direction: Axis.horizontal,
+            children: topic.tags.map((String tag) {
+              //タグの文字列
+              return new Chip(label: Text("#" + tag));
+            }).toList(),
+          ),
+        ),
+      ],
+    );
   }
 }
 
-class _TopicListSubPageState extends State<TopicListSubPage> {
+class TopicListSubFavoritePage extends BaseTopicSubFavoritePage {
+  TopicListSubFavoritePage({Key key, List<Topic> topics, Function updateFavoritedTopics})
+      : super(
+      key: key,
+      icon: Icon(Icons.filter_none, color: Colors.white),
+      topics: topics,
+      updateFavoriteTopics: updateFavoritedTopics);
+  State<StatefulWidget> createState() {
+    return _TopicListSubPageFavoriteState();
+  }
+}
+
+class _TopicListSubPageFavoriteState extends State<TopicListSubFavoritePage> {
   @override
   initState() {
     super.initState();
@@ -174,28 +193,57 @@ class _TopicListSubPageState extends State<TopicListSubPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: ListView(
-            children: DataBase.favoriteTopics.map((Topic topic) {
-      return new Card(
-          child: Column(children: <Widget>[
-        Text(topic.body, style: TextStyle(fontSize: 30)),
-        Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                child: Wrap(
-                  alignment: WrapAlignment.start,
-                  spacing: 8.0,
-                  runSpacing: 0.0,
-                  direction: Axis.horizontal,
-                  children: topic.tags.map((String tag) {
-                    return new Chip(label: Text('#' + tag));
-                  }).toList(),
+      child: ListView(
+        children: widget.topics.map((Topic topic) {
+          return Card(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                // 話題テキスト本文
+                Text(topic.body, style: TextStyle(fontSize: 30)),
+                // タグ
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: Wrap(
+                        alignment: WrapAlignment.start,
+                        spacing: 8.0,
+                        runSpacing: 0.0,
+                        direction: Axis.horizontal,
+                        children: topic.tags.map((String tag) {
+                          //タグの文字列
+                          return new Chip(label: Text("#" + tag));
+                        }).toList(),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ])
-      ]));
-    }).toList()));
+                RaisedButton(
+                  child: Icon(
+                      topic.isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: Colors.redAccent),
+                  color: Colors.white,
+                  shape: const CircleBorder(
+                    side: BorderSide(
+                      color: Colors.red,
+                      width: 1,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      topic.isFavorite = !topic.isFavorite;
+                      DataBase.saveFavoriteInfo(topic.dataBaseID, topic.isFavorite);
+                    });
+                  },
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ),
+    );
   }
 }

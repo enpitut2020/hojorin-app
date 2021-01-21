@@ -11,28 +11,25 @@ import 'package:firebase_core/firebase_core.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  DataBase.Init();
-  runApp(MainApp()); //アプリを起動する
+  await DataBase.init();
+  runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // homeの引数に本体のページが入っている
     return MaterialApp(debugShowCheckedModeBanner: false, home: BaseView());
   }
 }
 
 class BaseView extends StatefulWidget {
-  //タブを表示するページ
   @override
   _BaseViewState createState() => _BaseViewState();
 }
 
-// 状態を表すクラス
 class _BaseViewState extends State<BaseView> {
   int _selectedPageIndex = 0;
-  //タブで変更できるページが入っている
+  //タブで変更できるページ
   static List<BasePage> _pageList = [
     TopicPage(),
     TopicPostPage(),
@@ -66,7 +63,6 @@ class _BaseViewState extends State<BaseView> {
         ],
         currentIndex: _selectedPageIndex,
         onTap: (index) {
-          //indexでどのタブが表示されているかわかる
           setState(() {
             _selectedPageIndex = index; //タップしたら表示内容を変える
           });
