@@ -89,7 +89,7 @@ class TopicPage extends BasePage {
 }
 
 class _TopicPageState extends State<TopicPage> {
-  List<Topic> _topics;
+  //List<Topic> _topics;
   int _displayMode = 0;
   static List<BaseTopicSubPage> _topicPages;
 
@@ -97,10 +97,7 @@ class _TopicPageState extends State<TopicPage> {
   initState() {
     super.initState();
     // 一つ表示かリスト表示か
-    _topicPages = [
-      OneTopicSubPage(topics: _topics),
-      TopicListSubPage(topics: _topics)
-    ];
+    _topicPages = createTopicPages(DataBase.topics);
   }
 
   @override
@@ -130,10 +127,19 @@ class _TopicPageState extends State<TopicPage> {
               return Text('');
             }
             DataBase.getTopicsUpdateFromFireBase(snapshot);
+            _topicPages = createTopicPages(DataBase.topics);
             return _topicPages[_displayMode];
           }
       ),
     );
+  }
+
+  List<BaseTopicSubPage> createTopicPages(List<Topic> topics)
+  {
+    return [
+      OneTopicSubPage(topics: DataBase.topics),
+      TopicListSubPage(topics: DataBase.topics)
+    ];
   }
 }
 
@@ -174,13 +180,13 @@ class _OneTopicSubPageState extends State<OneTopicSubPage> {
           //タップしたときの挙動
           setState(() {
             //表示する話題を更新
-            if(DataBase.topics.length > 0){
-              _currentTopicIdx = ( 1 + _currentTopicIdx ) % DataBase.topics.length;
+            if(widget.topics.length > 0){
+              _currentTopicIdx = ( 1 + _currentTopicIdx ) % widget.topics.length;
             }
           });
         },
-        child: createOneTopicCard(DataBase.topics.length > 0
-            ? DataBase.topics[_currentTopicIdx]
+        child: createOneTopicCard(widget.topics.length > 0
+            ? widget.topics[_currentTopicIdx]
             : null),
       ),
     );
@@ -270,7 +276,7 @@ class _TopicListSubPageState extends State<TopicListSubPage> {
     return Container(
       child: ListView(
         //children: widget.topics.map((Topic topic) {
-        children: DataBase.topics.map((Topic topic) {
+        children: widget.topics.map((Topic topic) {
           return Card(
             child: Column(
               mainAxisSize: MainAxisSize.min,
