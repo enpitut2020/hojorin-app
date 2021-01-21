@@ -23,9 +23,19 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   List<Topic> searchTopics(String conditionText) {
-    List<String> conditions = conditionText.split((' '));
-    return DataBase.topics
-        .where((topic) => topic.tags.any((tag) => conditions.contains(tag)));
+    if(conditionText.isEmpty){
+      return _topics;
+    }
+    else{
+      List<String> conditions = conditionText.split((new RegExp(r"[ 　,]")));
+      return DataBase.topics.where((topic) =>
+          topic.tags.any((tag) =>
+              conditions.any((condition) =>
+                  tag.contains(condition)
+              )
+          )
+      ).toList();
+    }
   }
 
   void onSubmitCondition(String conditionText) {
