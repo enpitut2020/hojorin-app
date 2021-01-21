@@ -92,15 +92,22 @@ class _OneTopicSubPageFavoriteState extends State<OneTopicSubFavoritePage> {
       child: InkWell(
         onTap: () {
           //タップしたときの挙動
-          setState(() {
-            //表示する話題を更新
-            if(widget.topics.length > 0){
-              if(!widget.topics[_currentTopicIdx].isFavorite){
-                widget.updateFavoriteTopics();
+          //表示する話題を更新
+          if(widget.topics.length > 0){
+            if(!widget.topics[_currentTopicIdx].isFavorite){
+              widget.updateFavoriteTopics();
+              if(_currentTopicIdx == widget.topics.length - 1){
+                _currentTopicIdx = 0;
               }
-              _currentTopicIdx = ( 1 + _currentTopicIdx ) % widget.topics.length;
             }
-          });
+            else{
+              setState(() {
+                _currentTopicIdx =
+                    (1 + _currentTopicIdx) % widget.topics.length;
+              });
+            }
+          }
+
         },
         child: createOneTopicCard(widget.topics.length > 0
             ? widget.topics[_currentTopicIdx]
