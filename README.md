@@ -27,7 +27,7 @@
 ## APKファイルのダウンロード
 
 AndroidアプリのAPKファイルは以下から取得＆インストールできます。
-- [しゃべるん（Androidアプリ）](https://bit.ly/3q5ds6h)
+- [しゃべるん（Androidアプリ）](https://bit.ly/39XBM3k)
 
 ## 開発チーム
 
